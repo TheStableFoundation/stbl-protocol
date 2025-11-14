@@ -1,10 +1,10 @@
 import * as anchor from "@coral-xyz/anchor";
 import { Program } from "@coral-xyz/anchor";
-import { 
-  PublicKey, 
-  Keypair, 
+import {
+  PublicKey,
+  Keypair,
   SystemProgram,
-  LAMPORTS_PER_SOL
+  LAMPORTS_PER_SOL,
 } from "@solana/web3.js";
 import {
   TOKEN_PROGRAM_ID,
@@ -17,7 +17,9 @@ import {
 import { BachTokenSwap } from "./target/types/bach_token_swap";
 
 // Devnet addresses
-const OLD_BACH_TOKEN = new PublicKey("DENNuKzCcrLhEtxZ8tm7nSeef8qvKgGGrdxX6euNkNS7");
+const OLD_BACH_TOKEN = new PublicKey(
+  "DENNuKzCcrLhEtxZ8tm7nSeef8qvKgGGrdxX6euNkNS7",
+);
 const NEW_BACH_TOKEN = new PublicKey("YOUR_NEW_TOKEN_2022_ADDRESS"); // Deploy this first
 
 describe("BACH Token Swap - Devnet Test", () => {
@@ -45,7 +47,7 @@ describe("BACH Token Swap - Devnet Test", () => {
     // Derive PDA for swap state
     [swapStatePDA, swapStateBump] = PublicKey.findProgramAddressSync(
       [Buffer.from("swap_state")],
-      program.programId
+      program.programId,
     );
 
     console.log("Swap State PDA:", swapStatePDA.toString());
@@ -55,28 +57,28 @@ describe("BACH Token Swap - Devnet Test", () => {
       OLD_BACH_TOKEN,
       authority.publicKey,
       false,
-      TOKEN_PROGRAM_ID
+      TOKEN_PROGRAM_ID,
     );
 
     newTokenVault = getAssociatedTokenAddressSync(
       NEW_BACH_TOKEN,
       swapStatePDA,
       true,
-      TOKEN_2022_PROGRAM_ID
+      TOKEN_2022_PROGRAM_ID,
     );
 
     userOldTokenAccount = getAssociatedTokenAddressSync(
       OLD_BACH_TOKEN,
       authority.publicKey,
       false,
-      TOKEN_PROGRAM_ID
+      TOKEN_PROGRAM_ID,
     );
 
     userNewTokenAccount = getAssociatedTokenAddressSync(
       NEW_BACH_TOKEN,
       authority.publicKey,
       false,
-      TOKEN_2022_PROGRAM_ID
+      TOKEN_2022_PROGRAM_ID,
     );
 
     console.log("Old Token Vault:", oldTokenVault.toString());
@@ -101,7 +103,7 @@ describe("BACH Token Swap - Devnet Test", () => {
         .rpc();
 
       console.log("Initialize transaction signature:", tx);
-      
+
       // Fetch and display swap state
       const swapState = await program.account.swapState.fetch(swapStatePDA);
       console.log("Swap State:", {
@@ -111,7 +113,6 @@ describe("BACH Token Swap - Devnet Test", () => {
         swapRatio: `${swapState.swapRatioNumerator}:${swapState.swapRatioDenominator}`,
         totalSwapped: swapState.totalSwapped.toString(),
       });
-
     } catch (error) {
       console.error("Error initializing:", error);
       throw error;
@@ -127,10 +128,13 @@ describe("BACH Token Swap - Devnet Test", () => {
         provider.connection,
         userOldTokenAccount,
         "confirmed",
-        TOKEN_PROGRAM_ID
+        TOKEN_PROGRAM_ID,
       );
-      
-      console.log("Old BACH balance before:", oldTokenAccountBefore.amount.toString());
+
+      console.log(
+        "Old BACH balance before:",
+        oldTokenAccountBefore.amount.toString(),
+      );
 
       // Perform swap
       const tx = await program.methods
@@ -156,23 +160,28 @@ describe("BACH Token Swap - Devnet Test", () => {
         provider.connection,
         userOldTokenAccount,
         "confirmed",
-        TOKEN_PROGRAM_ID
+        TOKEN_PROGRAM_ID,
       );
 
       const newTokenAccountAfter = await getAccount(
         provider.connection,
         userNewTokenAccount,
         "confirmed",
-        TOKEN_2022_PROGRAM_ID
+        TOKEN_2022_PROGRAM_ID,
       );
 
-      console.log("Old BACH balance after:", oldTokenAccountAfter.amount.toString());
-      console.log("New BACH balance after:", newTokenAccountAfter.amount.toString());
+      console.log(
+        "Old BACH balance after:",
+        oldTokenAccountAfter.amount.toString(),
+      );
+      console.log(
+        "New BACH balance after:",
+        newTokenAccountAfter.amount.toString(),
+      );
 
       // Fetch updated swap state
       const swapState = await program.account.swapState.fetch(swapStatePDA);
       console.log("Total swapped:", swapState.totalSwapped.toString());
-
     } catch (error) {
       console.error("Error swapping tokens:", error);
       throw error;
@@ -195,8 +204,10 @@ describe("BACH Token Swap - Devnet Test", () => {
       console.log("Update ratio transaction signature:", tx);
 
       const swapState = await program.account.swapState.fetch(swapStatePDA);
-      console.log("New swap ratio:", `${swapState.swapRatioNumerator}:${swapState.swapRatioDenominator}`);
-
+      console.log(
+        "New swap ratio:",
+        `${swapState.swapRatioNumerator}:${swapState.swapRatioDenominator}`,
+      );
     } catch (error) {
       console.error("Error updating ratio:", error);
       throw error;
@@ -209,19 +220,24 @@ describe("BACH Token Swap - Devnet Test", () => {
         provider.connection,
         oldTokenVault,
         "confirmed",
-        TOKEN_PROGRAM_ID
+        TOKEN_PROGRAM_ID,
       );
 
       const newVaultAccount = await getAccount(
         provider.connection,
         newTokenVault,
         "confirmed",
-        TOKEN_2022_PROGRAM_ID
+        TOKEN_2022_PROGRAM_ID,
       );
 
-      console.log("Old token vault balance:", oldVaultAccount.amount.toString());
-      console.log("New token vault balance:", newVaultAccount.amount.toString());
-
+      console.log(
+        "Old token vault balance:",
+        oldVaultAccount.amount.toString(),
+      );
+      console.log(
+        "New token vault balance:",
+        newVaultAccount.amount.toString(),
+      );
     } catch (error) {
       console.error("Error checking vault balances:", error);
       throw error;
@@ -239,7 +255,7 @@ export async function setupProgram() {
 
 export async function createUserTokenAccounts(
   provider: anchor.AnchorProvider,
-  user: PublicKey
+  user: PublicKey,
 ) {
   const instructions = [];
 
@@ -247,19 +263,24 @@ export async function createUserTokenAccounts(
     OLD_BACH_TOKEN,
     user,
     false,
-    TOKEN_PROGRAM_ID
+    TOKEN_PROGRAM_ID,
   );
 
   const newTokenAccount = getAssociatedTokenAddressSync(
     NEW_BACH_TOKEN,
     user,
     false,
-    TOKEN_2022_PROGRAM_ID
+    TOKEN_2022_PROGRAM_ID,
   );
 
   // Check if accounts exist, if not create them
   try {
-    await getAccount(provider.connection, oldTokenAccount, "confirmed", TOKEN_PROGRAM_ID);
+    await getAccount(
+      provider.connection,
+      oldTokenAccount,
+      "confirmed",
+      TOKEN_PROGRAM_ID,
+    );
   } catch {
     instructions.push(
       createAssociatedTokenAccountInstruction(
@@ -267,13 +288,18 @@ export async function createUserTokenAccounts(
         oldTokenAccount,
         user,
         OLD_BACH_TOKEN,
-        TOKEN_PROGRAM_ID
-      )
+        TOKEN_PROGRAM_ID,
+      ),
     );
   }
 
   try {
-    await getAccount(provider.connection, newTokenAccount, "confirmed", TOKEN_2022_PROGRAM_ID);
+    await getAccount(
+      provider.connection,
+      newTokenAccount,
+      "confirmed",
+      TOKEN_2022_PROGRAM_ID,
+    );
   } catch {
     instructions.push(
       createAssociatedTokenAccountInstruction(
@@ -281,8 +307,8 @@ export async function createUserTokenAccounts(
         newTokenAccount,
         user,
         NEW_BACH_TOKEN,
-        TOKEN_2022_PROGRAM_ID
-      )
+        TOKEN_2022_PROGRAM_ID,
+      ),
     );
   }
 
@@ -292,11 +318,11 @@ export async function createUserTokenAccounts(
 export async function airdropSol(
   connection: anchor.web3.Connection,
   publicKey: PublicKey,
-  amount: number = 2
+  amount: number = 2,
 ) {
   const signature = await connection.requestAirdrop(
     publicKey,
-    amount * LAMPORTS_PER_SOL
+    amount * LAMPORTS_PER_SOL,
   );
   await connection.confirmTransaction(signature);
   console.log(`Airdropped ${amount} SOL to ${publicKey.toString()}`);
